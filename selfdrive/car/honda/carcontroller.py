@@ -12,8 +12,13 @@ VisualAlert = car.CarControl.HUDControl.VisualAlert
 LongCtrlState = car.CarControl.Actuators.LongControlState
 
 def compute_gb_honda_bosch(accel, speed):
-  #TODO returns 0s, is unused
-  return 0.0, 0.0
+  creep_brake = 0.0
+  creep_speed = 2.3
+  creep_brake_value = 0.15
+  if speed < creep_speed:
+    creep_brake = (creep_speed - speed) / creep_speed * creep_brake_value
+  gb = float(accel) / 3.5 - creep_brake
+  return clip(gb, 0.0, 1.0), clip(-gb, 0.0, 1.0)
 
 
 def compute_gb_honda_nidec(accel, speed):

@@ -70,6 +70,15 @@ TogglesPanel::TogglesPanel(QWidget *parent) : ListWidget(parent) {
                                   "In this mode openpilot will ignore lanelines and just drive how it thinks a human would.",
                                   "../assets/offroad/icon_road.png",
                                   this));
+
+
+  // DAEHAHN - added a new feature to system toggle
+  addItem(new ParamControl("EnableGasPedal",  
+                                  "Enable to use Gas Pedal",
+                                  "Enable to use gas pedal while Openpilot engaged.",
+                                  "../assets/offroad/icon_openpilot.png",
+                                  this));
+
 #ifdef ENABLE_MAPS
   addItem(new ParamControl("NavSettingTime24h",
                                   "Show ETA in 24h format",
@@ -77,14 +86,12 @@ TogglesPanel::TogglesPanel(QWidget *parent) : ListWidget(parent) {
                                   "../assets/offroad/icon_metric.png",
                                   this));
 #endif
-  if (params.getBool("DisableRadar_Allow")) {
     addItem(new ParamControl("DisableRadar",
                              "openpilot Longitudinal Control",
                              "openpilot will disable the car's radar and will take over control of gas and brakes. Warning: this disables AEB!",
                              "../assets/offroad/icon_speed_limit.png",
                              this));
 
-  }
 
   bool record_lock = params.getBool("RecordFrontLock");
   record_toggle->setEnabled(!record_lock);
