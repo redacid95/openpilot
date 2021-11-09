@@ -71,7 +71,12 @@ TogglesPanel::TogglesPanel(QWidget *parent) : ListWidget(parent) {
                                   "../assets/offroad/icon_road.png",
                                   this));
 
-
+  addItem(new ParamControl("LqrTune",
+                           "Use LQR Tune",
+                           "Use LQR tuning values. For select Honda's",
+                           "../assets/offroad/icon_openpilot.png",
+                           this));
+    
   // DAEHAHN - added a new feature to system toggle
   addItem(new ParamControl("EnableGasPedal",  
                                   "Enable to use Gas Pedal",
