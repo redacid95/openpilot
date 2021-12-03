@@ -28,6 +28,7 @@
 #define COLOR_RED nvgRGBA(201, 34, 49, 255)
 
 const int bdr_s = 30;
+const int bdr_is = 30;
 const int header_h = 420;
 const int footer_h = 280;
 
@@ -112,6 +113,10 @@ typedef struct UIScene {
 
   mat3 view_from_calib;
   bool world_objects_visible;
+
+  //brakeUI
+  bool brakePressed;
+  bool computerBraking;
 
   cereal::PandaState::PandaType pandaType;
 
