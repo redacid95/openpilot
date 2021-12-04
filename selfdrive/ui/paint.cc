@@ -198,13 +198,6 @@ static void ui_draw_vision_face(UIState *s) {
   ui_draw_circle_image(s, center_x, center_y, radius, "driver_face", s->scene.dm_active);
 }
 
-static void ui_draw_vision_brake(UIState *s) {
-  const int radius = 80;
-  const int center_x = radius + (bdr_is * 2) + 250;
-  const int center_y = s->fb_h - footer_h / 2 + 50;
-  ui_draw_circle_image(s, center_x, center_y, radius, "brake_disk", (s->scene.brakePressed || s->scene.computerBraking));
-}
-
 static void ui_draw_vision_header(UIState *s) {
   NVGpaint gradient = nvgLinearGradient(s->vg, 0, header_h - (header_h / 2.5), 0, header_h,
                                         nvgRGBAf(0, 0, 0, 0.45), nvgRGBAf(0, 0, 0, 0));
@@ -224,7 +217,6 @@ static void ui_draw_vision(UIState *s) {
   ui_draw_vision_header(s);
   if ((*s->sm)["controlsState"].getControlsState().getAlertSize() == cereal::ControlsState::AlertSize::NONE) {
     ui_draw_vision_face(s);
-    ui_draw_vision_brake(s);
   }
 }
 
@@ -291,7 +283,6 @@ void ui_nvg_init(UIState *s) {
   std::vector<std::pair<const char *, const char *>> images = {
     {"wheel", "../assets/img_chffr_wheel.png"},
     {"driver_face", "../assets/img_driver_face.png"},
-    {"brake_disk", "../assets/img_brake_disc.png"},
   };
   for (auto [name, file] : images) {
     s->images[name] = nvgCreateImage(s->vg, file, 1);
