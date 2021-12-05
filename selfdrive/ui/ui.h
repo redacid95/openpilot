@@ -100,6 +100,10 @@ typedef struct UIScene {
   mat3 view_from_calib;
   bool world_objects_visible;
 
+  //Brake UI
+  bool brakePressed;
+  bool computerBraking;
+
   cereal::PandaState::PandaType pandaType;
 
   // modelV2
