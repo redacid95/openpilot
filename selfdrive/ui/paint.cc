@@ -201,7 +201,7 @@ static void ui_draw_vision_face(UIState *s) {
 //Brake UI
 static void ui_draw_vision_brake(UIState *s) {
   const int radius = 96;
-  const int center_x = radius + (bdr_s * 2) + 225;
+  const int center_x = radius + (bdr_s * 2) + 200;
   const int center_y = s->fb_h - footer_h / 2;
   ui_draw_circle_image(s, center_x, center_y, radius, "brake_disk", (s->scene.brakePressed || s->scene.computerBraking));
 }
