@@ -119,15 +119,6 @@ static void update_state(UIState *s) {
   if (sm.updated("modelV2") && s->vg) {
     update_model(s, sm["modelV2"].getModelV2());
   }
-  //Brake UI
-  if (sm.updated("carState")) {
-    auto car_state = sm["carState"].getCarState();
-    s->scene.brakePressed = car_state.getBrakePressed();
-  }
-  //Brake UI
-  if (sm.updated("carControl")) {
-    s->scene.computerBraking = sm["carControl"].getCarControl().getActuators().getAccel() < 0;
-  }
   if (sm.updated("radarState") && s->vg) {
     std::optional<cereal::ModelDataV2::XYZTData::Reader> line;
     if (sm.rcv_frame("modelV2") > 0) {
