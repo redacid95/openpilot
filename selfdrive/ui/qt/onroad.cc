@@ -164,6 +164,7 @@ void OnroadAlerts::paintEvent(QPaintEvent *event) {
 OnroadHud::OnroadHud(QWidget *parent) : QWidget(parent) {
   engage_img = QPixmap("../assets/img_chffr_wheel.png").scaled(img_size, img_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
   dm_img = QPixmap("../assets/img_driver_face.png").scaled(img_size, img_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  brake_img = QPixmap("../assets/img_brake_disc.png").scaled(img_size, img_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
   connect(this, &OnroadHud::valueChanged, [=] { update(); });
 }
@@ -186,6 +187,8 @@ void OnroadHud::updateState(const UIState &s) {
   setProperty("maxSpeed", maxspeed_str);
   setProperty("speedUnit", s.scene.is_metric ? "km/h" : "mph");
   setProperty("hideDM", cs.getAlertSize() != cereal::ControlsState::AlertSize::NONE);
+  setProperty("brakePressed", sm["carState"].getCarState().getBrakePressed());
+  setProperty("computerBraking", sm["carControl"].getCarControl().getActuators().getAccel() < 0);
   setProperty("status", s.status);
 
   // update engageability and DM icons at 2Hz
@@ -239,6 +242,10 @@ void OnroadHud::paintEvent(QPaintEvent *event) {
     drawIcon(p, radius / 2 + (bdr_s * 2), rect().bottom() - footer_h / 2,
              dm_img, QColor(0, 0, 0, 70), dmActive ? 1.0 : 0.2);
   }
+  
+  //Brake Icon
+  drawIcon(p, radius / 2 + (bdr_s * 2) + 200, rect().bottom() - footer_h / 2,
+            brake_img, QColor(0, 0, 0, 70), ((brakePressed || computerBraking) ? 1.0 : 0.2));
 }
 
 void OnroadHud::drawText(QPainter &p, int x, int y, const QString &text, int alpha) {
