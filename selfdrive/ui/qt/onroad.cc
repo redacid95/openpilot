@@ -188,7 +188,7 @@ void OnroadHud::updateState(const UIState &s) {
   setProperty("speedUnit", s.scene.is_metric ? "km/h" : "mph");
   setProperty("hideDM", cs.getAlertSize() != cereal::ControlsState::AlertSize::NONE);
   setProperty("brakePressed", sm["carState"].getCarState().getBrakePressed());
-  setProperty("computerBraking", sm["carControl"].getCarControl().getActuators().getBrake() > 0);
+  setProperty("computerBraking", sm["carControl"].getCarControl().getActuators().getAccel() < -0.2);
   setProperty("status", s.status);
 
   // update engageability and DM icons at 2Hz
