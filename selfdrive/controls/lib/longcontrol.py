@@ -72,10 +72,12 @@ class LongControl():
 
       v_target_upper = interp(CP.longitudinalActuatorDelayUpperBound, T_IDXS[:CONTROL_N], long_plan.speeds)
       a_target_upper = 2 * (v_target_upper - long_plan.speeds[0])/CP.longitudinalActuatorDelayUpperBound - long_plan.accels[0]
-      a_target = min(a_target_lower, a_target_upper)
 
+      v_target = long_plan.speeds[0]
+      a_target = min(a_target_lower, a_target_upper)
       v_target_future = long_plan.speeds[-1]
     else:
+      v_target = 0.0
       v_target_future = 0.0
       a_target = 0.0
 
@@ -88,7 +90,7 @@ class LongControl():
     # Update state machine
     output_accel = self.last_output_accel
     self.long_control_state = long_control_state_trans(CP, active, self.long_control_state, CS.vEgo,
-                                                       v_target_future, long_plan.speeds[0], output_accel,
+                                                       v_target_future, v_target, output_accel,
                                                        CS.brakePressed, CS.cruiseState.standstill)
 
     if self.long_control_state == LongCtrlState.off or CS.gasPressed:
@@ -97,7 +99,7 @@ class LongControl():
 
     # tracking objects and driving
     elif self.long_control_state == LongCtrlState.pid:
-      self.v_pid = long_plan.speeds[0]
+      self.v_pid = v_target
 
       # Toyota starts braking more when it thinks you want to stop
       # Freeze the integrator so we don't accelerate to compensate, and don't allow positive acceleration
