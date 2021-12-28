@@ -503,7 +503,7 @@ class Controls:
     if not self.joystick_mode:
       # accel PID loop
       pid_accel_limits = self.CI.get_pid_accel_limits(self.CP, CS.vEgo, self.v_cruise_kph * CV.KPH_TO_MS)
-      actuators.accel = self.LoC.update(self.active, CS, self.CP, long_plan, pid_accel_limits)
+      actuators.accel, stopping, starting = self.LoC.update(self.active, CS, self.CP, long_plan, pid_accel_limits)
 
       # Steering PID loop and lateral MPC
       lat_active = self.active and not CS.steerWarning and not CS.steerError and CS.vEgo > self.CP.minSteerSpeed
@@ -513,6 +513,8 @@ class Controls:
                                                                              lat_plan.curvatureRates)
       actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(lat_active, CS, self.CP, self.VM, params, self.last_actuators,
                                                                              desired_curvature, desired_curvature_rate)
+      lac_log.saturated = starting
+      lac_log.active = stopping
     else:
       lac_log = log.ControlsState.LateralDebugState.new_message()
       if self.sm.rcv_frame['testJoystick'] > 0 and self.active:
@@ -537,17 +539,17 @@ class Controls:
       self.saturated_count = 0
 
     # Send a "steering required alert" if saturation count has reached the limit
-    if (lac_log.saturated and not CS.steeringPressed) or \
-       (self.saturated_count > STEER_ANGLE_SATURATION_TIMEOUT):
-
-      if len(lat_plan.dPathPoints):
-        # Check if we deviated from the path
-        # TODO use desired vs actual curvature
-        left_deviation = actuators.steer > 0 and lat_plan.dPathPoints[0] < -0.20
-        right_deviation = actuators.steer < 0 and lat_plan.dPathPoints[0] > 0.20
-
-        if left_deviation or right_deviation:
-          self.events.add(EventName.steerSaturated)
+    # if (lac_log.saturated and not CS.steeringPressed) or \
+    #    (self.saturated_count > STEER_ANGLE_SATURATION_TIMEOUT):
+    #
+    #   if len(lat_plan.dPathPoints):
+    #     # Check if we deviated from the path
+    #     # TODO use desired vs actual curvature
+    #     left_deviation = actuators.steer > 0 and lat_plan.dPathPoints[0] < -0.20
+    #     right_deviation = actuators.steer < 0 and lat_plan.dPathPoints[0] > 0.20
+    #
+    #     if left_deviation or right_deviation:
+    #       self.events.add(EventName.steerSaturated)
 
     # Ensure no NaNs/Infs
     for p in ACTUATOR_FIELDS:
