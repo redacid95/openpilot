@@ -13,13 +13,14 @@ ACCEL_MAX_ISO = 2.0  # m/s^2
 
 
 def long_control_state_trans(CP, active, long_control_state, v_ego, v_target_future,
-                             brake_pressed, cruise_standstill):
+                             v_target, output_accel, brake_pressed, cruise_standstill):
   """Update longitudinal control state machine"""
+  accelerating = v_target_future > v_target
   stopping_condition = (v_ego < 2.0 and cruise_standstill) or \
                        (v_ego < CP.vEgoStopping and
-                        (v_target_future < CP.vEgoStopping or brake_pressed))
+                        ((v_target_future < CP.vEgoStopping and not accelerating) or brake_pressed))
 
-  starting_condition = v_target_future > CP.vEgoStarting and not cruise_standstill
+  starting_condition = v_target_future > CP.vEgoStarting and accelerating and not cruise_standstill
 
   if not active:
     long_control_state = LongCtrlState.off
@@ -65,10 +66,12 @@ class LongControl():
 
       v_target_upper = interp(CP.longitudinalActuatorDelayUpperBound, T_IDXS[:CONTROL_N], long_plan.speeds)
       a_target_upper = 2 * (v_target_upper - long_plan.speeds[0])/CP.longitudinalActuatorDelayUpperBound - long_plan.accels[0]
-      a_target = min(a_target_lower, a_target_upper)
 
+      v_target = long_plan.speeds[0]
       v_target_future = long_plan.speeds[-1]
+      a_target = min(a_target_lower, a_target_upper)
     else:
+      v_target = 0.0
       v_target_future = 0.0
       a_target = 0.0
 
@@ -81,8 +84,8 @@ class LongControl():
     # Update state machine
     output_accel = self.last_output_accel
     self.long_control_state = long_control_state_trans(CP, active, self.long_control_state, CS.vEgo,
-                                                       v_target_future, CS.brakePressed,
-                                                       CS.cruiseState.standstill)
+                                                       v_target_future, v_target, output_accel,
+                                                       CS.brakePressed, CS.cruiseState.standstill)
 
     if self.long_control_state == LongCtrlState.off or CS.gasPressed:
       self.reset(CS.vEgo)
@@ -90,7 +93,7 @@ class LongControl():
 
     # tracking objects and driving
     elif self.long_control_state == LongCtrlState.pid:
-      self.v_pid = long_plan.speeds[0]
+      self.v_pid = v_target
 
       # Toyota starts braking more when it thinks you want to stop
       # Freeze the integrator so we don't accelerate to compensate, and don't allow positive acceleration
