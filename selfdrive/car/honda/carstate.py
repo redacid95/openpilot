@@ -81,6 +81,7 @@ def get_can_signals(CP, gearbox_msg, main_on_sig_msg):
     signals += [
       ("EPB_STATE", "EPB_STATUS", 0),
       ("IMPERIAL_UNIT", "CAR_SPEED", 1),
+      ("BRAKE_LIGHTS", "ACC_CONTROL", 0),
     ]
     checks += [
       ("EPB_STATUS", 50),
@@ -279,7 +280,8 @@ class CarState(CarStateBase):
       # panda safety only checks BRAKE_PRESSED signal
       ret.brakePressed = bool(cp.vl["POWERTRAIN_DATA"]["BRAKE_PRESSED"] or
                               (self.brake_switch and self.brake_switch_prev and cp.ts["POWERTRAIN_DATA"]["BRAKE_SWITCH"] != self.brake_switch_prev_ts))
-      ret.brakeLightsDEPRECATED = bool(cp.vl["ACC_CONTROL"]['BRAKE_LIGHTS'] or ret.brakePressed)
+      if self.CP.carFingerprint in HONDA_BOSCH:
+        ret.brakeLightsDEPRECATED = bool(cp.vl["ACC_CONTROL"]["BRAKE_LIGHTS"] or ret.brakePressed)
 
       self.brake_switch_prev = self.brake_switch
       self.brake_switch_prev_ts = cp.ts["POWERTRAIN_DATA"]["BRAKE_SWITCH"]
