@@ -167,7 +167,7 @@ void OnroadAlerts::paintEvent(QPaintEvent *event) {
 OnroadHud::OnroadHud(QWidget *parent) : QWidget(parent) {
   engage_img = loadPixmap("../assets/img_chffr_wheel.png", {img_size, img_size});
   dm_img = loadPixmap("../assets/img_driver_face.png", {img_size, img_size});
-  dm_img = loadPixmap("../assets/img_brake_disc.png", {img_size, img_size});
+  brake_img = loadPixmap("../assets/img_brake_disc.png", {img_size, img_size});
 
   connect(this, &OnroadHud::valueChanged, [=] { update(); });
 }
