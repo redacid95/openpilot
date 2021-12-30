@@ -190,8 +190,7 @@ void OnroadHud::updateState(const UIState &s) {
   setProperty("maxSpeed", maxspeed_str);
   setProperty("speedUnit", s.scene.is_metric ? "km/h" : "mph");
   setProperty("hideDM", cs.getAlertSize() != cereal::ControlsState::AlertSize::NONE);
-  setProperty("brakePressed", sm["carState"].getCarState().getBrakePressed());
-  setProperty("computerBraking", sm["carControl"].getCarControl().getActuators().getAccel() < -0.2);
+  setProperty("computerBraking", sm["carState"].getCarState().getBrakeLightsDEPRECATED());
   setProperty("status", s.status);
 
   // update engageability and DM icons at 2Hz
@@ -248,7 +247,7 @@ void OnroadHud::paintEvent(QPaintEvent *event) {
   
   //Brake Icon
   drawIcon(p, radius / 2 + (bdr_s * 2) + 200, rect().bottom() - footer_h / 2,
-            brake_img, QColor(0, 0, 0, 70), ((brakePressed || computerBraking) ? 1.0 : 0.2));
+            brake_img, QColor(0, 0, 0, 70), (computerBraking ? 1.0 : 0.2));
 }
 
 void OnroadHud::drawText(QPainter &p, int x, int y, const QString &text, int alpha) {
