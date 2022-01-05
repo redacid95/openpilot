@@ -71,6 +71,18 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
       "In this mode openpilot will ignore lanelines and just drive how it thinks a human would.",
       "../assets/offroad/icon_road.png",
     },
+    {
+      "LqrTune",
+      "Use LQR Tune",
+      "Use LQR tuning values. For select Honda's",
+      "../assets/offroad/icon_openpilot.png",
+    },
+    {
+      "EnableGasPedal",  
+      "Enable to use Gas Pedal",
+      "Enable to use gas pedal while Openpilot engaged.",
+      "../assets/offroad/icon_openpilot.png",
+    },
 #ifdef ENABLE_MAPS
     {
       "NavSettingTime24h",
@@ -78,20 +90,18 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
       "Use 24h format instead of am/pm",
       "../assets/offroad/icon_metric.png",
     },
+    {
+      "DisableRadar",
+      "openpilot Longitudinal Control",
+      "openpilot will disable the car's radar and will take over control of gas and brakes. Warning: this disables AEB!",
+      "../assets/offroad/icon_speed_limit.png",
+    }
 #endif
 
   };
 
   Params params;
 
-  if (params.getBool("DisableRadar_Allow")) {
-    toggles.push_back({
-      "DisableRadar",
-      "openpilot Longitudinal Control",
-      "openpilot will disable the car's radar and will take over control of gas and brakes. Warning: this disables AEB!",
-      "../assets/offroad/icon_speed_limit.png",
-    });
-  }
 
   for (auto &[param, title, desc, icon] : toggles) {
     auto toggle = new ParamControl(param, title, desc, icon, this);
