@@ -491,9 +491,13 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
     ET.PERMANENT: NormalPermanentAlert("Fan Malfunction", "Likely Hardware Issue"),
   },
 
-  # Camera is not outputting frames at a constant framerate
+  # Camera is not outputting frames
   EventName.cameraMalfunction: {
     ET.PERMANENT: NormalPermanentAlert("Camera Malfunction", "Likely Hardware Issue"),
+  },
+  # Camera framerate too low
+  EventName.cameraFrameRate: {
+    ET.PERMANENT: NormalPermanentAlert("Camera Frame Rate Low", "Reboot your Device"),
   },
 
   # Unused
@@ -659,6 +663,10 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   EventName.commIssue: {
     ET.SOFT_DISABLE: soft_disable_alert("Communication Issue between Processes"),
     ET.NO_ENTRY: NoEntryAlert("Communication Issue between Processes"),
+  },
+  EventName.commIssueAvgFreq: {
+    ET.SOFT_DISABLE: soft_disable_alert("Low Communication Rate between Processes"),
+    ET.NO_ENTRY: NoEntryAlert("Low Communication Rate between Processes"),
   },
 
   # Thrown when manager detects a service exited unexpectedly while driving
