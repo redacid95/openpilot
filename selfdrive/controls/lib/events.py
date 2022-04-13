@@ -727,19 +727,19 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.roadCameraError: {
-    ET.PERMANENT: NormalPermanentAlert("Camera Error",
+    ET.PERMANENT: NormalPermanentAlert("Camera CRC Error - Road",
                                        duration=1.,
                                        creation_delay=30.),
   },
 
   EventName.driverCameraError: {
-    ET.PERMANENT: NormalPermanentAlert("Camera Error",
+    ET.PERMANENT: NormalPermanentAlert("Camera CRC Error - Road Fisheye",
                                        duration=1.,
                                        creation_delay=30.),
   },
 
   EventName.wideRoadCameraError: {
-    ET.PERMANENT: NormalPermanentAlert("Camera Error",
+    ET.PERMANENT: NormalPermanentAlert("Camera CRC Error - Driver",
                                        duration=1.,
                                        creation_delay=30.),
   },
@@ -765,6 +765,8 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 1., creation_delay=1.),
     ET.NO_ENTRY: NoEntryAlert("CAN Error: Check Connections"),
   },
+
+  EventName.canBusMissing: {},
 
   EventName.steerUnavailable: {
     ET.IMMEDIATE_DISABLE: ImmediateDisableAlert("LKAS Fault: Restart the Car"),
