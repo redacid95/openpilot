@@ -37,7 +37,7 @@ from typing import List, Tuple, Optional
 from common.basedir import BASEDIR
 from common.markdown import parse_markdown
 from common.params import Params
-from selfdrive.hardware import EON, TICI, HARDWARE
+from selfdrive.hardware import TICI, HARDWARE
 from selfdrive.swaglog import cloudlog
 from selfdrive.controls.lib.alertmanager import set_offroad_alert
 from selfdrive.version import is_tested_branch
@@ -170,6 +170,8 @@ def setup_git_options(cwd: str) -> None:
     ("core.trustctime", "false"),
     ("core.checkStat", "minimal"),
     ("protocol.version", "2"),
+    ("gc.auto", "0"),
+    ("gc.autoDetach", "false"),
   ]
   for option, value in git_cfg:
     run(["git", "config", option, value], cwd)
@@ -240,7 +242,7 @@ def init_overlay() -> None:
   cloudlog.info(f"git diff output:\n{git_diff}")
 
 
-def finalize_update() -> None:
+def finalize_update(wait_helper: WaitTimeHelper) -> None:
   """Take the current OverlayFS merged view and finalize a copy outside of
   OverlayFS, ready to be swapped-in at BASEDIR. Copy using shutil.copytree"""
 
@@ -256,8 +258,19 @@ def finalize_update() -> None:
   run(["git", "reset", "--hard"], FINALIZED)
   run(["git", "submodule", "foreach", "--recursive", "git", "reset"], FINALIZED)
 
-  set_consistent_flag(True)
-  cloudlog.info("done finalizing overlay")
+  cloudlog.info("Starting git gc")
+  t = time.monotonic()
+  try:
+    run(["git", "gc"], FINALIZED)
+    cloudlog.event("Done git gc", duration=time.monotonic() - t)
+  except subprocess.CalledProcessError:
+    cloudlog.exception(f"Failed git gc, took {time.monotonic() - t:.3f} s")
+
+  if wait_helper.shutdown:
+    cloudlog.info("got interrupted finalizing overlay")
+  else:
+    set_consistent_flag(True)
+    cloudlog.info("done finalizing overlay")
 
 
 def handle_agnos_update(wait_helper: WaitTimeHelper) -> None:
@@ -281,42 +294,6 @@ def handle_agnos_update(wait_helper: WaitTimeHelper) -> None:
   target_slot_number = get_target_slot_number()
   flash_agnos_update(manifest_path, target_slot_number, cloudlog)
   set_offroad_alert("Offroad_NeosUpdate", False)
-
-
-def handle_neos_update(wait_helper: WaitTimeHelper) -> None:
-  from selfdrive.hardware.eon.neos import download_neos_update
-
-  cur_neos = HARDWARE.get_os_version()
-  updated_neos = run(["bash", "-c", r"unset REQUIRED_NEOS_VERSION && source launch_env.sh && \
-                       echo -n $REQUIRED_NEOS_VERSION"], OVERLAY_MERGED).strip()
-
-  cloudlog.info(f"NEOS version check: {cur_neos} vs {updated_neos}")
-  if cur_neos == updated_neos:
-    return
-
-  cloudlog.info(f"Beginning background download for NEOS {updated_neos}")
-  set_offroad_alert("Offroad_NeosUpdate", True)
-
-  update_manifest = os.path.join(OVERLAY_MERGED, "selfdrive/hardware/eon/neos.json")
-
-  neos_downloaded = False
-  start_time = time.monotonic()
-  # Try to download for one day
-  while not neos_downloaded and not wait_helper.shutdown and \
-        (time.monotonic() - start_time < 60*60*24):
-    wait_helper.ready_event.clear()
-    try:
-      download_neos_update(update_manifest, cloudlog)
-      neos_downloaded = True
-    except Exception:
-      cloudlog.info("NEOS background download failed, retrying")
-      wait_helper.sleep(120)
-
-  # If the download failed, we'll show the alert again when we retry
-  set_offroad_alert("Offroad_NeosUpdate", False)
-  if not neos_downloaded:
-    raise Exception("Failed to download NEOS update")
-  cloudlog.info(f"NEOS background download successful, took {time.monotonic() - start_time} seconds")
 
 
 def check_git_fetch_result(fetch_txt: str) -> bool:
@@ -360,13 +337,11 @@ def fetch_update(wait_helper: WaitTimeHelper) -> bool:
       ]
       cloudlog.info("git reset success: %s", '\n'.join(r))
 
-      if EON:
-        handle_neos_update(wait_helper)
-      elif TICI:
+      if TICI:
         handle_agnos_update(wait_helper)
 
     # Create the finalized, ready-to-swap update
-    finalize_update()
+    finalize_update(wait_helper)
     cloudlog.info("openpilot update successful!")
   else:
     cloudlog.info("nothing new from git at this time")
@@ -405,10 +380,7 @@ def main() -> None:
 
   first_run = True
   last_fetch_time = 0.0
-  update_failed_count = 0
-
-  # Set initial params for offroad alerts
-  set_params(False, 0, None)
+  update_failed_count = 0  # TODO: Load from param?
 
   # Wait for IsOffroad to be set before our first update attempt
   wait_helper = WaitTimeHelper(proc)
@@ -420,14 +392,6 @@ def main() -> None:
   while not wait_helper.shutdown:
     update_now = wait_helper.ready_event.is_set()
     wait_helper.ready_event.clear()
-
-    # Don't run updater while onroad or if the time's wrong
-    time_wrong = datetime.datetime.utcnow().year < 2019
-    is_onroad = not params.get_bool("IsOffroad")
-    if is_onroad or time_wrong:
-      wait_helper.sleep(30)
-      cloudlog.info("not running updater, not offroad")
-      continue
 
     # Attempt an update
     exception = None
@@ -463,10 +427,11 @@ def main() -> None:
       exception = str(e)
       overlay_init.unlink(missing_ok=True)
 
-    try:
-      set_params(new_version, update_failed_count, exception)
-    except Exception:
-      cloudlog.exception("uncaught updated exception while setting params, shouldn't happen")
+    if not wait_helper.shutdown:
+      try:
+        set_params(new_version, update_failed_count, exception)
+      except Exception:
+        cloudlog.exception("uncaught updated exception while setting params, shouldn't happen")
 
     # TODO: replace this with a good backoff
     wait_helper.sleep(300)
