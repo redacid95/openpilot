@@ -112,6 +112,7 @@ class CarInterface(CarInterfaceBase):
       ret.centerToFront = CivicParams.CENTER_TO_FRONT
       ret.steerRatio = 15.38  # 10.93 is end-to-end spec
       ret.maxLateralAccel = 2.0
+      ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 2564, 8000], [0, 2564, 3840]]
       ret.lateralTuning.init('torque')
       ret.lateralTuning.torque.useSteeringAngle = True
       ret.lateralTuning.torque.kp = 2.0 / ret.maxLateralAccel
