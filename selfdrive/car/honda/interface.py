@@ -111,9 +111,13 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = CivicParams.WHEELBASE
       ret.centerToFront = CivicParams.CENTER_TO_FRONT
       ret.steerRatio = 15.38  # 10.93 is end-to-end spec
-      ret.maxLateralAccel = 2.1
-      ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 8000], [0, 8000]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.3], [0.1]]
+      ret.maxLateralAccel = 2.0
+      ret.lateralTuning.init('torque')
+      ret.lateralTuning.torque.useSteeringAngle = True
+      ret.lateralTuning.torque.kp = 2.0 / ret.maxLateralAccel
+      ret.lateralTuning.torque.kf = 1.0 / ret.maxLateralAccel
+      ret.lateralTuning.torque.ki = 0.5 / ret.maxLateralAccel
+      ret.lateralTuning.torque.friction = 0.04
       tire_stiffness_factor = 1.
 
     elif candidate in (CAR.ACCORD, CAR.ACCORDH):
