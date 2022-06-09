@@ -115,9 +115,9 @@ class CarInterface(CarInterfaceBase):
       ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 2564, 8000], [0, 2564, 3840]]
       ret.lateralTuning.init('torque')
       ret.lateralTuning.torque.useSteeringAngle = True
-      ret.lateralTuning.torque.kp = 2.0 / ret.maxLateralAccel
+      ret.lateralTuning.torque.kp = 1.0 / ret.maxLateralAccel
       ret.lateralTuning.torque.kf = 1.0 / ret.maxLateralAccel
-      ret.lateralTuning.torque.ki = 0.5 / ret.maxLateralAccel
+      ret.lateralTuning.torque.ki = 0.1 / ret.maxLateralAccel
       ret.lateralTuning.torque.friction = 0.04
       tire_stiffness_factor = 1.
 
