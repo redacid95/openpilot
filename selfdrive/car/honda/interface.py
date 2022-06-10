@@ -3,6 +3,7 @@ from cereal import car
 from panda import Panda
 from common.conversions import Conversions as CV
 from common.numpy_fast import interp
+from common.params import Params
 from selfdrive.car.honda.values import CarControllerParams, CruiseButtons, HondaFlags, CAR, HONDA_BOSCH, HONDA_NIDEC_ALT_SCM_MESSAGES, HONDA_BOSCH_ALT_BRAKE_SIGNAL
 from selfdrive.car import STD_CARGO_KG, CivicParams, create_button_enable_events, create_button_event, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
@@ -111,10 +112,18 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = CivicParams.WHEELBASE
       ret.centerToFront = CivicParams.CENTER_TO_FRONT
       ret.steerRatio = 15.38  # 10.93 is end-to-end spec
-      ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 4096], [0, 4096]]  # TODO: determine if there is a dead zone at the top end
+      ret.maxLateralAccel = 2.0
+       if Params().get_bool('Torque'):
+        ret.lateralTuning.init('torque')
+        ret.lateralTuning.torque.useSteeringAngle = True
+        ret.lateralTuning.torque.kp = 1.0 / ret.maxLateralAccel
+        ret.lateralTuning.torque.kf = 1.0 / ret.maxLateralAccel
+        ret.lateralTuning.torque.ki = 0.1 / ret.maxLateralAccel
+        ret.lateralTuning.torque.friction = 0.04
+      else:
+        ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 2564, 8000], [0, 2564, 3840]]
+        ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.36], [0.108]] #minus 10% from 0.4, 0.12
       tire_stiffness_factor = 1.
-      ret.maxLateralAccel = 1.6
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.8], [0.24]]
 
     elif candidate in (CAR.ACCORD, CAR.ACCORDH):
       stop_and_go = True
