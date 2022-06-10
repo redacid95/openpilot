@@ -114,7 +114,7 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 15.38  # 10.93 is end-to-end spec
       ret.maxLateralAccel = 2.0
        if Params().get_bool('Torque'):
-        MAX_LAT_ACCEL = 2.0
+        MAX_LAT_ACCEL = ret.maxLateralAccel
         ret.lateralTuning.init('torque')
         ret.lateralTuning.torque.useSteeringAngle = True
         ret.lateralTuning.torque.kp = 1.0 / MAX_LAT_ACCEL
