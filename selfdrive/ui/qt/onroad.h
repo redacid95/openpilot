@@ -34,6 +34,8 @@ class NvgWindow : public CameraViewWidget {
   Q_PROPERTY(bool engageable MEMBER engageable);
   Q_PROPERTY(bool brakePressed MEMBER brakePressed);
   Q_PROPERTY(bool computerBraking MEMBER computerBraking);
+  Q_PROPERTY(bool dmActive MEMBER dmActive);
+  Q_PROPERTY(bool hideDM MEMBER hideDM);
   Q_PROPERTY(int status MEMBER status);
 
 public:
@@ -46,6 +48,7 @@ private:
 
   QPixmap engage_img;
   QPixmap brake_img;
+  QPixmap dm_img
   const int radius = 192;
   const int img_size = (radius / 2) * 1.5;
   QString speed;
@@ -55,6 +58,8 @@ private:
   bool engageable = false;
   bool brakePressed = false;
   bool computerBraking = false;
+  bool dmActive = false;
+  bool hideDM = false;
   int status = STATUS_DISENGAGED;
 
 protected:
