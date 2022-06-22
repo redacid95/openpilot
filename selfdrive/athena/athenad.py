@@ -493,7 +493,7 @@ def getNetworks():
 
 @dispatcher.add_method
 def takeSnapshot():
-  from system.camerad.snapshot.snapshot import jpeg_write, snapshot
+  from selfdrive.camerad.snapshot.snapshot import jpeg_write, snapshot
   ret = snapshot()
   if ret is not None:
     def b64jpeg(x):

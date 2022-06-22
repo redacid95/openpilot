@@ -34,7 +34,6 @@ class NvgWindow : public CameraViewWidget {
   Q_PROPERTY(bool is_cruise_set MEMBER is_cruise_set);
   Q_PROPERTY(bool has_eu_speed_limit MEMBER has_eu_speed_limit);
   Q_PROPERTY(bool has_us_speed_limit MEMBER has_us_speed_limit);
-  Q_PROPERTY(bool is_metric MEMBER is_metric);
 
   Q_PROPERTY(bool engageable MEMBER engageable);
   Q_PROPERTY(bool brakePressed MEMBER brakePressed);
@@ -61,7 +60,6 @@ private:
   float setSpeed;
   float speedLimit;
   bool is_cruise_set = false;
-  bool is_metric = false;
   bool engageable = false;
   bool brakePressed = false;
   bool computerBraking = false;

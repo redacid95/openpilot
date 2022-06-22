@@ -123,8 +123,7 @@ class CarInfo:
 
 class Harness(Enum):
   nidec = "Honda Nidec"
-  bosch_a = "Honda Bosch A"
-  bosch_b = "Honda Bosch B"
+  bosch = "Honda Bosch A"
   toyota = "Toyota"
   subaru = "Subaru"
   fca = "FCA"
@@ -145,7 +144,6 @@ class Harness(Enum):
   hyundai_m = "Hyundai M"
   hyundai_n = "Hyundai N"
   hyundai_o = "Hyundai O"
-  hyundai_p = "Hyundai P"
   custom = "Developer"
   obd_ii = "OBD-II"
   nissan_a = "Nissan A"

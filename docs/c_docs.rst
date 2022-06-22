@@ -28,11 +28,11 @@ selfdrive
 camerad
 ^^^^^^^
 .. autodoxygenindex::
-   :project: system_camerad_cameras
+   :project: selfdrive_camerad_cameras
 .. autodoxygenindex::
-   :project: system_camerad_transforms
+   :project: selfdrive_camerad_transforms
 .. autodoxygenindex::
-   :project: system_camerad_imgproc
+   :project: selfdrive_camerad_imgproc
 
 locationd
 ^^^^^^^^^

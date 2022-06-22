@@ -1,4 +1,4 @@
-#include "system/camerad/cameras/camera_common.h"
+#include "selfdrive/camerad/cameras/camera_common.h"
 
 #include <cassert>
 
