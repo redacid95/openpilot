@@ -120,6 +120,7 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.torque.kf = 1.0 / MAX_LAT_ACCEL
         ret.lateralTuning.torque.ki = 0.1 / MAX_LAT_ACCEL
         ret.lateralTuning.torque.friction = 0.04
+        ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 2564, 8000], [0, 2564, 3840]]
       else:
         ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 2564, 8000], [0, 2564, 3840]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.36], [0.108]] #minus 10% from 0.4, 0.12
