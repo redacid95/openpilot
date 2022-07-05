@@ -112,6 +112,7 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = CivicParams.WHEELBASE
       ret.centerToFront = CivicParams.CENTER_TO_FRONT
       ret.steerRatio = 15.38  # 10.93 is end-to-end spec
+      ret.stoppingDecelRate = 1.0
       ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 2564, 8000], [0, 2564, 3840]]
       if Params().get_bool('Torque'):
         MAX_LAT_ACCEL = 2.0
