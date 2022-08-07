@@ -63,7 +63,7 @@ class CarState(CarStateBase):
     ret.genericToggle = cp.vl["STEERING_LEVERS"]["HIGH_BEAM_PRESSED"] == 1
 
     # steering wheel
-    ret.steeringAngleDeg = cp.vl["STEERING"]["STEER_ANGLE"]
+    ret.steeringAngleDeg = cp.vl["STEERING"]["STEERING_ANGLE"] + cp.vl["STEERING"]["STEERING_ANGLE_HP"]
     ret.steeringRateDeg = cp.vl["STEERING"]["STEERING_RATE"]
     ret.steeringTorque = cp.vl["EPS_2"]["COLUMN_TORQUE"]
     ret.steeringTorqueEps = cp.vl["EPS_2"]["EPS_TORQUE_MOTOR"]
@@ -83,8 +83,7 @@ class CarState(CarStateBase):
       self.auto_high_beam = cp_cam.vl["DAS_6"]['AUTO_HIGH_BEAM_ON']  # Auto High Beam isn't Located in this message on chrysler or jeep currently located in 729 message
       ret.steerFaultTemporary  = cp.vl["EPS_3"]["DASM_FAULT"] == 1
     else:
-      steer_state = cp.vl["EPS_2"]["LKAS_STATE"]
-      ret.steerFaultPermanent = steer_state == 4 or (steer_state == 0 and ret.vEgo > self.CP.minSteerSpeed)
+      ret.steerFaultPermanent = cp.vl["EPS_2"]["LKAS_STATE"] == 4
 
     # blindspot sensors
     if self.CP.enableBsm:
@@ -127,7 +126,8 @@ class CarState(CarStateBase):
       ("WHEEL_SPEED_RR", "ESP_6"),
       ("WHEEL_SPEED_RL", "ESP_6"),
       ("WHEEL_SPEED_FR", "ESP_6"),
-      ("STEER_ANGLE", "STEERING"),
+      ("STEERING_ANGLE", "STEERING"),
+      ("STEERING_ANGLE_HP", "STEERING"),
       ("STEERING_RATE", "STEERING"),
       ("TURN_SIGNALS", "STEERING_LEVERS"),
       ("HIGH_BEAM_PRESSED", "STEERING_LEVERS"),
