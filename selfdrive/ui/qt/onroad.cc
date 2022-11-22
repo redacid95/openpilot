@@ -176,6 +176,7 @@ AnnotatedCameraWidget::AnnotatedCameraWidget(VisionStreamType type, QWidget* par
   engage_img = loadPixmap("../assets/img_chffr_wheel.png", {img_size, img_size});
   experimental_img = loadPixmap("../assets/img_experimental.svg", {img_size - 5, img_size - 5});
   dm_img = loadPixmap("../assets/img_driver_face.png", {img_size, img_size});
+  brake_img = loadPixmap("../assets/img_brake_disc.png", {img_size, img_size});
 }
 
 void AnnotatedCameraWidget::updateState(const UIState &s) {
@@ -220,6 +221,7 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
   setProperty("setSpeed", set_speed);
   setProperty("speedUnit", s.scene.is_metric ? tr("km/h") : tr("mph"));
   setProperty("hideDM", cs.getAlertSize() != cereal::ControlsState::AlertSize::NONE);
+  setProperty("computerBraking", sm["carControl"].getCarControl().getActuators().getAccel() < -0.2);
   setProperty("status", s.status);
 
   // update engageability and DM icons at 2Hz
@@ -389,6 +391,10 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
     int dm_icon_x = rightHandDM ? rect().right() -  radius / 2 - (bdr_s * 2) : radius / 2 + (bdr_s * 2);
     drawIcon(p, dm_icon_x, rect().bottom() - footer_h / 2,
              dm_img, blackColor(70), dmActive ? 1.0 : 0.2);
+
+	//Brake Icon
+	drawIcon(p, radius / 2 + (bdr_s * 2) + 200, rect().bottom() - footer_h / 2,
+            brake_img, QColor(0, 0, 0, 70), ((brakePressed || computerBraking) ? 1.0 : 0.2));
   }
   p.restore();
 }

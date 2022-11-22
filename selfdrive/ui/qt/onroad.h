@@ -37,6 +37,8 @@ class AnnotatedCameraWidget : public CameraWidget {
   Q_PROPERTY(bool is_metric MEMBER is_metric);
 
   Q_PROPERTY(bool engageable MEMBER engageable);
+  Q_PROPERTY(bool brakePressed MEMBER brakePressed);
+  Q_PROPERTY(bool computerBraking MEMBER computerBraking);
   Q_PROPERTY(bool dmActive MEMBER dmActive);
   Q_PROPERTY(bool hideDM MEMBER hideDM);
   Q_PROPERTY(bool rightHandDM MEMBER rightHandDM);
@@ -52,6 +54,7 @@ private:
 
   QPixmap engage_img;
   QPixmap experimental_img;
+  QPixmap brake_img;
   QPixmap dm_img;
   const int radius = 192;
   const int img_size = (radius / 2) * 1.5;
@@ -62,6 +65,8 @@ private:
   bool is_cruise_set = false;
   bool is_metric = false;
   bool engageable = false;
+  bool brakePressed = false;
+  bool computerBraking = false;
   bool dmActive = false;
   bool hideDM = false;
   bool rightHandDM = false;
