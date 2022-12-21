@@ -27,6 +27,7 @@ class CarControllerParams:
   NIDEC_MAX_ACCEL_V = [0.5, 2.4, 1.4, 0.6]
   NIDEC_MAX_ACCEL_BP = [0.0, 4.0, 10., 20.]
 
+  NIDEC_GAS_MAX = 198  # 0xc6
   NIDEC_BRAKE_MAX = 1024 // 4
 
   BOSCH_ACCEL_MIN = -3.5  # m/s^2
@@ -242,7 +243,7 @@ FW_VERSIONS = {
       b'39990-TVA-A340\x00\x00',
       b'39990-TVA-X030\x00\x00',
       b'39990-TVA-X040\x00\x00',
-      b'39990-TVA,A150\x00\x00',
+      b'39990-TVA,A150\x00\x00', # modified firmware
       b'39990-TVE-H130\x00\x00',
     ],
     (Ecu.unknown, 0x18da3af1, None): [
@@ -1175,6 +1176,7 @@ FW_VERSIONS = {
     (Ecu.programmedFuelInjection, 0x18da10f1, None): [
       b'37805-RLV-B220\x00\x00',
       b'37805-RLV-B210\x00\x00',
+      b'37805-RLV-L160\x00\x00',
     ],
     (Ecu.eps, 0x18da30f1, None): [
       b'39990-TGS-A230\x00\x00',
@@ -1185,6 +1187,7 @@ FW_VERSIONS = {
     ],
     (Ecu.gateway, 0x18daeff1, None): [
       b'38897-TG7-A040\x00\x00',
+      b'38897-TG7-A030\x00\x00',
     ],
     (Ecu.srs, 0x18da53f1, None): [
       b'77959-TGS-A010\x00\x00',
@@ -1194,10 +1197,12 @@ FW_VERSIONS = {
     ],
     (Ecu.transmission, 0x18da1ef1, None): [
       b'28101-5EZ-A600\x00\x00',
+      b'28101-5EZ-A430\x00\x00',
     ],
     (Ecu.combinationMeter, 0x18da60f1, None): [
       b'78109-TGS-AT20\x00\x00',
       b'78109-TGS-AX20\x00\x00',
+      b'78109-TGS-AJ20\x00\x00',
     ],
     (Ecu.vsa, 0x18da28f1, None): [
       b'57114-TGS-A530\x00\x00',

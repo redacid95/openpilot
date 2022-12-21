@@ -13,6 +13,7 @@ class CarState(CarStateBase):
     self.CCP = CarControllerParams(CP)
     self.button_states = {button.event_type: False for button in self.CCP.BUTTONS}
     self.esp_hold_confirmation = False
+    self.upscale_lead_car_signal = False
 
   def create_button_events(self, pt_cp, buttons):
     button_events = []
@@ -141,6 +142,9 @@ class CarState(CarStateBase):
     # Additional safety checks performed in CarInterface.
     ret.espDisabled = pt_cp.vl["ESP_21"]["ESP_Tastung_passiv"] != 0
 
+    # Digital instrument clusters expect the ACC HUD lead car distance to be scaled differently
+    self.upscale_lead_car_signal = bool(pt_cp.vl["Kombi_03"]["KBI_Variante"])
+
     return ret
 
   def update_pq(self, pt_cp, cam_cp, ext_cp, trans_type):
@@ -220,7 +224,7 @@ class CarState(CarStateBase):
     ret.stockAeb = False
 
     # Update ACC radar status.
-    self.acc_type = 0  # TODO: this is ACC "basic" with nonzero min speed, support FtS (1) later
+    self.acc_type = ext_cp.vl["ACC_System"]["ACS_Typ_ACC"]
     ret.cruiseState.available = bool(pt_cp.vl["Motor_5"]["GRA_Hauptschalter"])
     ret.cruiseState.enabled = pt_cp.vl["Motor_2"]["GRA_Status"] in (1, 2)
     if self.CP.pcmCruise:
@@ -281,6 +285,7 @@ class CarState(CarStateBase):
       ("ESP_Tastung_passiv", "ESP_21"),          # Stability control disabled
       ("ESP_Haltebestaetigung", "ESP_21"),       # ESP hold confirmation
       ("KBI_Handbremse", "Kombi_01"),            # Manual handbrake applied
+      ("KBI_Variante", "Kombi_03"),              # Digital/full-screen instrument cluster installed
       ("TSK_Status", "TSK_06"),                  # ACC engagement status from drivetrain coordinator
       ("GRA_Hauptschalter", "GRA_ACC_01"),       # ACC button, on/off
       ("GRA_Abbrechen", "GRA_ACC_01"),           # ACC button, cancel
@@ -312,6 +317,7 @@ class CarState(CarStateBase):
       ("Airbag_02", 5),     # From J234 Airbag control module
       ("Kombi_01", 2),      # From J285 Instrument cluster
       ("Blinkmodi_02", 1),  # From J519 BCM (sent at 1Hz when no lights active, 50Hz when active)
+      ("Kombi_03", 0),      # From J285 instrument cluster (not present on older cars, 1Hz when present)
     ]
 
     if CP.transmissionType == TransmissionType.automatic:
@@ -509,10 +515,12 @@ class MqbExtraSignals:
 class PqExtraSignals:
   # Additional signal and message lists for optional or bus-portable controllers
   fwd_radar_signals = [
+    ("ACS_Typ_ACC", "ACC_System"),               # Basic vs FtS (no SnG support on PQ)
     ("ACA_StaACC", "ACC_GRA_Anziege"),           # ACC drivetrain coordinator status
     ("ACA_V_Wunsch", "ACC_GRA_Anziege"),         # ACC set speed
   ]
   fwd_radar_checks = [
+    ("ACC_System", 50),                          # From J428 ACC radar control module
     ("ACC_GRA_Anziege", 25),                     # From J428 ACC radar control module
   ]
   bsm_radar_signals = [
