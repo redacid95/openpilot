@@ -250,8 +250,13 @@ void UIState::updateStatus() {
 UIState::UIState(QObject *parent) : QObject(parent) {
   sm = std::make_unique<SubMaster, const std::initializer_list<const char *>>({
     "modelV2", "controlsState", "liveCalibration", "radarState", "deviceState", "roadCameraState",
-    "pandaStates", "carParams", "driverMonitoringState", "carState", "carControl", "liveLocationKalman", "driverStateV2",
+<<<<<<< HEAD
+    "pandaStates", "carParams", "driverMonitoringState", "carState", "liveLocationKalman", "driverStateV2",
     "wideRoadCameraState", "managerState", "navInstruction", "navRoute", "uiPlan",
+=======
+    "pandaStates", "carParams", "driverMonitoringState", "carState", "carControl", "liveLocationKalman",
+    "wideRoadCameraState", "managerState", "navInstruction", "navRoute", "gnssMeasurements",
+>>>>>>> master-0.9.1
   });
 
   Params params;
