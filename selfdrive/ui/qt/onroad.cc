@@ -439,9 +439,13 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
   drawText(p, rect().center().x(), 210, speedStr);
   configFont(p, "Inter", 66, "Regular");
   drawText(p, rect().center().x(), 290, speedUnit, 200);
+
   
-	drawIcon(p, radius / 2 + (bdr_s * 2) + 200, rect().bottom() - footer_h / 2,
-            brake_img, QColor(0, 0, 0, 70), ((brakePressed || computerBraking) ? 1.0 : 0.2));
+  int x = rightHandDM ? rect().right() -  (btn_size - 24) / 2 - (bdr_s * 2) : (btn_size - 24) / 2 + (bdr_s * 2) + 200;
+  int y = rect().bottom() - footer_h / 2;
+  float opacity = ((brakePressed || computerBraking) ? 1.0 : 0.2);
+  drawIcon(p, x, y, brake_img, blackColor(0), opacity);
+  
   p.restore();
 }
 
