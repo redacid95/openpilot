@@ -438,8 +438,6 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
   configFont(p, "Inter", 66, "Regular");
   drawText(p, rect().center().x(), 290, speedUnit, 200);
   
-	drawIcon(p, radius / 2 + (bdr_s * 2) + 200, rect().bottom() - footer_h / 2,
-            brake_img, blackColor(70), ((brakePressed || computerBraking) ? 1.0 : 0.2));
   p.restore();
 }
 
@@ -564,6 +562,11 @@ void AnnotatedCameraWidget::drawDriverState(QPainter &painter, const UIState *s)
   int y = rect().bottom() - footer_h / 2;
   float opacity = dmActive ? 0.65 : 0.2;
   drawIcon(painter, x, y, dm_img, blackColor(70), opacity);
+
+  int x1 = (btn_size - 24) / 2 + (bdr_s * 2) + 200;
+  int y1 = rect().bottom() - footer_h / 2;
+  float opacity1 = computerBraking ? 0.65 : 0.2;
+  drawIcon(painter, x1, y1, brake_img, blackColor(70), opacity1);
 
   // face
   QPointF face_kpts_draw[std::size(default_face_kpts_3d)];
