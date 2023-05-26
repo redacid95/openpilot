@@ -56,6 +56,8 @@ class AnnotatedCameraWidget : public CameraWidget {
   Q_PROPERTY(bool has_us_speed_limit MEMBER has_us_speed_limit);
   Q_PROPERTY(bool is_metric MEMBER is_metric);
 
+  Q_PROPERTY(bool brakePressed MEMBER brakePressed);
+  Q_PROPERTY(bool computerBraking MEMBER computerBraking);
   Q_PROPERTY(bool dmActive MEMBER dmActive);
   Q_PROPERTY(bool hideDM MEMBER hideDM);
   Q_PROPERTY(bool rightHandDM MEMBER rightHandDM);
@@ -70,6 +72,7 @@ private:
   void drawText(QPainter &p, int x, int y, const QString &text, int alpha = 255);
 
   ExperimentalButton *experimental_btn;
+  QPixmap brake_img;
   QPixmap dm_img;
   float speed;
   QString speedUnit;
@@ -77,6 +80,8 @@ private:
   float speedLimit;
   bool is_cruise_set = false;
   bool is_metric = false;
+  bool brakePressed = false;
+  bool computerBraking = false;
   bool dmActive = false;
   bool hideDM = false;
   bool rightHandDM = false;
