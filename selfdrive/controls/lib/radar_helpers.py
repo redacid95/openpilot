@@ -140,6 +140,7 @@ class Cluster():
       _vision_lead_aTau[lead_index] = _LEAD_ACCEL_TAU
     else:
       _vision_lead_aTau[lead_index] *= 0.9
+      
     return {
       "dRel": float(lead_msg.x[0] - RADAR_TO_CAMERA),
       "yRel": float(-lead_msg.y[0]),
