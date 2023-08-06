@@ -7,7 +7,8 @@ from common.numpy_fast import clip
 from system.swaglog import cloudlog
 # WARNING: imports outside of constants will not trigger a rebuild
 from selfdrive.modeld.constants import index_function
-from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
+from selfdrive.car.interfaces import ACCEL_MIN
+from selfdrive.controls.radard import _LEAD_ACCEL_TAU
 
 if __name__ == '__main__':  # generating code
   from third_party.acados.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
@@ -54,7 +55,7 @@ FCW_IDXS = T_IDXS < 5.0
 T_DIFFS = np.diff(T_IDXS, prepend=[0.])
 MIN_ACCEL = -3.5
 MAX_ACCEL = 2.0
-COMFORT_BRAKE = 2.45
+COMFORT_BRAKE = 2.4
 STOP_DISTANCE = 6.0
 
 def get_jerk_factor(personality=log.LongitudinalPersonality.standard):
@@ -63,7 +64,7 @@ def get_jerk_factor(personality=log.LongitudinalPersonality.standard):
   elif personality==log.LongitudinalPersonality.standard:
     return 1.0
   elif personality==log.LongitudinalPersonality.aggressive:
-    return 0.8
+    return 1.0
   else:
     raise NotImplementedError("Longitudinal personality not supported")
 
@@ -72,7 +73,7 @@ def get_T_FOLLOW(personality=log.LongitudinalPersonality.standard):
   if personality==log.LongitudinalPersonality.relaxed:
     return 1.75
   elif personality==log.LongitudinalPersonality.standard:
-    return 1.22
+    return 1.2
   elif personality==log.LongitudinalPersonality.aggressive:
     return 1.22
   else:
@@ -316,7 +317,7 @@ class LongitudinalMpc:
 
     # MPC will not converge if immediate crash is expected
     # Clip lead distance to what is still possible to brake for
-    min_x_lead = ((v_ego + v_lead)/2) * (v_ego - v_lead) / (-MIN_ACCEL * 2)
+    min_x_lead = ((v_ego + v_lead)/2) * (v_ego - v_lead) / (-ACCEL_MIN * 2)
     x_lead = clip(x_lead, min_x_lead, 1e8)
     v_lead = clip(v_lead, 0.0, 1e8)
     a_lead = clip(a_lead, -10., 5.)
@@ -343,7 +344,7 @@ class LongitudinalMpc:
     lead_0_obstacle = lead_xv_0[:,0] + get_stopped_equivalence_factor(lead_xv_0[:,1])
     lead_1_obstacle = lead_xv_1[:,0] + get_stopped_equivalence_factor(lead_xv_1[:,1])
 
-    self.params[:,0] = MIN_ACCEL
+    self.params[:,0] = ACCEL_MIN
     self.params[:,1] = self.max_a
 
     # Update in ACC mode or ACC/e2e blend
@@ -357,7 +358,7 @@ class LongitudinalMpc:
       v_cruise_clipped = np.clip(v_cruise * np.ones(N+1),
                                  v_lower,
                                  v_upper)
-      cruise_obstacle = np.cumsum(T_DIFFS * v_cruise_clipped) + get_safe_obstacle_distance(v_cruise_clipped, get_T_FOLLOW(personality))
+      cruise_obstacle = np.cumsum(T_DIFFS * v_cruise_clipped) + get_safe_obstacle_distance(v_cruise_clipped, t_follow)
       x_obstacles = np.column_stack([lead_0_obstacle, lead_1_obstacle, cruise_obstacle])
       self.source = SOURCES[np.argmin(x_obstacles[0])]
 

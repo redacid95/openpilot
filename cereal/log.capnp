@@ -869,6 +869,7 @@ struct ModelDataV2 {
   temporalPose @21 :Pose;
 
   navEnabled @22 :Bool;
+  locationMonoTime @24 :UInt64;
 
 
   struct LeadDataV2 {
@@ -2081,6 +2082,8 @@ struct NavInstruction {
   speedLimit @10 :Float32; # m/s
   speedLimitSign @11 :SpeedLimitSign;
 
+  allManeuvers @12 :List(Maneuver);
+
   struct Lane {
     directions @0 :List(Direction);
     active @1 :Bool;
@@ -2097,7 +2100,13 @@ struct NavInstruction {
   enum SpeedLimitSign {
     mutcd @0; # US Style
     vienna @1; # EU Style
-    }
+  }
+
+  struct Maneuver {
+    distance @0 :Float32;
+    type @1 :Text;
+    modifier @2 :Text;
+  }
 }
 
 struct NavRoute {
@@ -2117,6 +2126,7 @@ struct MapRenderState {
 
 struct NavModelData {
   frameId @0 :UInt32;
+  locationMonoTime @6 :UInt64;
   modelExecutionTime @1 :Float32;
   dspExecutionTime @2 :Float32;
   features @3 :List(Float32);
