@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QPushButton>
 #include <QStackedLayout>
 #include <QWidget>
@@ -18,7 +20,7 @@ class OnroadAlerts : public QWidget {
   Q_OBJECT
 
 public:
-  OnroadAlerts(QWidget *parent = 0) : QWidget(parent) {};
+  OnroadAlerts(QWidget *parent = 0) : QWidget(parent) {}
   void updateAlert(const Alert &a);
 
 protected:
@@ -63,21 +65,6 @@ private:
 // container window for the NVG UI
 class AnnotatedCameraWidget : public CameraWidget {
   Q_OBJECT
-  Q_PROPERTY(float speed MEMBER speed);
-  Q_PROPERTY(QString speedUnit MEMBER speedUnit);
-  Q_PROPERTY(float setSpeed MEMBER setSpeed);
-  Q_PROPERTY(float speedLimit MEMBER speedLimit);
-  Q_PROPERTY(bool is_cruise_set MEMBER is_cruise_set);
-  Q_PROPERTY(bool has_eu_speed_limit MEMBER has_eu_speed_limit);
-  Q_PROPERTY(bool has_us_speed_limit MEMBER has_us_speed_limit);
-  Q_PROPERTY(bool is_metric MEMBER is_metric);
-
-  Q_PROPERTY(bool brakePressed MEMBER brakePressed);
-  Q_PROPERTY(bool computerBraking MEMBER computerBraking);
-  Q_PROPERTY(bool dmActive MEMBER dmActive);
-  Q_PROPERTY(bool hideBottomIcons MEMBER hideBottomIcons);
-  Q_PROPERTY(bool rightHandDM MEMBER rightHandDM);
-  Q_PROPERTY(int status MEMBER status);
 
 public:
   explicit AnnotatedCameraWidget(VisionStreamType type, QWidget* parent = 0);
@@ -86,7 +73,6 @@ public:
   MapSettingsButton *map_settings_btn;
 
 private:
-  void drawIcon(QPainter &p, int x, int y, QPixmap &img, QBrush bg, float opacity);
   void drawText(QPainter &p, int x, int y, const QString &text, int alpha = 255);
 
   QVBoxLayout *main_layout;
@@ -99,7 +85,6 @@ private:
   float speedLimit;
   bool is_cruise_set = false;
   bool is_metric = false;
-  bool brakePressed = false;
   bool computerBraking = false;
   bool dmActive = false;
   bool hideBottomIcons = false;
@@ -158,5 +143,6 @@ private:
 
 private slots:
   void offroadTransition(bool offroad);
+  void primeChanged(bool prime);
   void updateState(const UIState &s);
 };
