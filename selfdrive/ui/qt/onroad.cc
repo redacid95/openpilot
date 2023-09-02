@@ -541,7 +541,7 @@ void AnnotatedCameraWidget::drawDriverState(QPainter &painter, const UIState *s)
   int x1 = rightHandDM ? width() - offset : offset + 200;
   int y1 = height() - offset;
   float opacity1 = computerBraking ? 0.65 : 0.2;
-  drawIcon(painter, x1, y1, brake_img, blackColor(70), opacity1);
+  drawIcon(painter, QPoint(x1, y1), brake_img, blackColor(70), opacity1);
 
   // face
   QPointF face_kpts_draw[std::size(default_face_kpts_3d)];
