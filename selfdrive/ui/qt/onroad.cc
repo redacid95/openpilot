@@ -310,6 +310,7 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
   is_metric = s.scene.is_metric;
   speedUnit =  s.scene.is_metric ? tr("km/h") : tr("mph");
   hideBottomIcons = (cs.getAlertSize() != cereal::ControlsState::AlertSize::NONE);
+  computerBraking = (sm["carControl"].getCarControl().getActuators().getAccel() < -0.2);
   status = s.status;
 
   // update engageability/experimental mode button
