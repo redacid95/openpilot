@@ -536,8 +536,8 @@ void AnnotatedCameraWidget::drawDriverState(QPainter &painter, const UIState *s)
   float opacity = dmActive ? 0.65 : 0.2;
   drawIcon(painter, QPoint(x, y), dm_img, blackColor(70), opacity);
 
-  int x1 = (offset / 2) + 200;
-  int y1 = height() - offset / 2;
+  int x1 = offset + 200;
+  int y1 = height() - offset;
   float opacity1 = computerBraking ? 0.65 : 0.2;
   drawIcon(painter, QPoint(x1, y1), brake_img, blackColor(70), opacity1);
 
