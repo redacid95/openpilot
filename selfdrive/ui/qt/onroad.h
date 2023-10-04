@@ -77,6 +77,7 @@ private:
 
   QVBoxLayout *main_layout;
   ExperimentalButton *experimental_btn;
+  QPixmap brake_img;
   QPixmap dm_img;
   float speed;
   QString speedUnit;
@@ -84,6 +85,7 @@ private:
   float speedLimit;
   bool is_cruise_set = false;
   bool is_metric = false;
+  bool computerBraking = false;
   bool dmActive = false;
   bool hideBottomIcons = false;
   bool rightHandDM = false;

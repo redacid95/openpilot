@@ -274,6 +274,7 @@ AnnotatedCameraWidget::AnnotatedCameraWidget(VisionStreamType type, QWidget* par
   main_layout->addWidget(map_settings_btn, 0, Qt::AlignBottom | Qt::AlignRight);
 
   dm_img = loadPixmap("../assets/img_driver_face.png", {img_size + 5, img_size + 5});
+  brake_img = loadPixmap("../assets/img_brake_disc.png", {img_size + 5, img_size + 5});
 }
 
 void AnnotatedCameraWidget::updateState(const UIState &s) {
@@ -309,6 +310,7 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
   is_metric = s.scene.is_metric;
   speedUnit =  s.scene.is_metric ? tr("km/h") : tr("mph");
   hideBottomIcons = (cs.getAlertSize() != cereal::ControlsState::AlertSize::NONE);
+  computerBraking = (sm["carControl"].getCarControl().getActuators().getAccel() < -0.2);
   status = s.status;
 
   // update engageability/experimental mode button
@@ -422,7 +424,7 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
   drawText(p, rect().center().x(), 210, speedStr);
   p.setFont(InterFont(66));
   drawText(p, rect().center().x(), 290, speedUnit, 200);
-
+  
   p.restore();
 }
 
@@ -533,6 +535,11 @@ void AnnotatedCameraWidget::drawDriverState(QPainter &painter, const UIState *s)
   int y = height() - offset;
   float opacity = dmActive ? 0.65 : 0.2;
   drawIcon(painter, QPoint(x, y), dm_img, blackColor(70), opacity);
+
+  int x1 = offset + 200;
+  int y1 = height() - offset;
+  float opacity1 = computerBraking ? 0.65 : 0.2;
+  drawIcon(painter, QPoint(x1, y1), brake_img, blackColor(70), opacity1);
 
   // face
   QPointF face_kpts_draw[std::size(default_face_kpts_3d)];
